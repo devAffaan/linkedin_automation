@@ -1,0 +1,652 @@
+{
+  "name": "Linkedin automation",
+  "nodes": [
+    {
+      "parameters": {
+        "person": "S-Akf5KMA4",
+        "text": "={{ $('main agent').item.json.output.post }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "d5b33702-cbca-4216-8339-5f6c7c45c917",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "gX3bGkDQIhiWvL7I",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"post\": \"Your LinkedIn post content here\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1024,
+        144
+      ],
+      "id": "ff69a665-d58d-45a2-b0c5-cbf542f2821c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 18 * * 1,3,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1344,
+        -48
+      ],
+      "id": "92284169-eb20-40ce-965f-09040fb2b4f8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "versgenntechnologies@gmail.com",
+        "subject": "New LinkedIn Post for Approval",
+        "message": "=<h3>Here is today's LinkedIn post:</h3>\n<p>{{ $json.output.post }}</p>\n<br>\n<a href=\"{{ $execution.resumeUrl }}&approved=true\" style=\"padding:10px 20px;background:green;color:white;text-decoration:none;border-radius:5px;\">Approve</a>\n&nbsp;&nbsp;\n<a href=\"{{ $execution.resumeUrl }}&approved=false\" style=\"padding:10px 20px;background:red;color:white;text-decoration:none;border-radius:5px;\">Reject</a>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "4d6cc865-ad0b-450d-8825-a5945e4bb376",
+      "name": "Send a message",
+      "webhookId": "5ab4879c-15f8-433e-b768-ab9735c97964",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AS3OsRdYrxe40DtU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "responseMode": "responseNode",
+        "limitWaitTime": true,
+        "resumeAmount": 24,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -16
+      ],
+      "id": "1dc9feaa-366d-4e0a-9c2a-c393bd748cc9",
+      "name": "Wait",
+      "webhookId": "dc59bc00-2727-41d4-bd3a-6ac403ff93dd"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oSs1eTsw8Fi7GU53vpIqujNMV-Nx8rrn2dWsIcnq_uU",
+          "mode": "list",
+          "cachedResultName": "Linkedin Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oSs1eTsw8Fi7GU53vpIqujNMV-Nx8rrn2dWsIcnq_uU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zJA3oWVQSEO8xX6fg-zcvhxGuJfYnWr7k6sLqObbYpI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('yyyy-MM-dd') }}",
+            "Day": "={{ $now.format('cccc') }}",
+            "Post Content": "={{ $('main agent').item.json.output.post }}",
+            "Status": "Posted "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Day",
+              "displayName": "Day",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Content",
+              "displayName": "Post Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        912,
+        -96
+      ],
+      "id": "267e6ef2-cca4-4108-a64e-919b59b783be",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zT0ijcBmJTr2duja",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "413b2264-cf52-45db-8fea-e11ea3851208",
+              "leftValue": "={{ $json.query.approved }}",
+              "rightValue": "=true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        -32
+      ],
+      "id": "92c24ee4-0d69-4316-a005-4addde09237a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        144
+      ],
+      "id": "839949d9-2a4e-4630-923b-4cfe6752343e",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6keNErJ9VqsWSRCN",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional LinkedIn ghostwriter for a freelance web developer / full-stack engineer who works with WordPress, Shopify, PHP, JavaScript, APIs, and automation tools like GoHighLevel.\n\nYour task is to REFINE and IMPROVE the LinkedIn post provided below. Keep its original topic, core idea, and message fully intact. Do not change the subject or invent a new topic.\n\n--- POST TO REFINE ---\n\n{{ $json.output.post }}\n\n--- END POST ---\n\nBelow are examples of past posts that performed extremely well. Study them closely for STYLE, STRUCTURE, RHYTHM, and TONE only. Do not copy their topics or lines — use them purely as a style reference.\n\n\n\n--- REFINEMENT INSTRUCTIONS ---\n\n1. Rewrite the opening line into a punchy, scroll-stopping hook — a bold claim, a contrarian statement, or a sharp question. It must be different in wording from the original opening.\n\n2. Break long paragraphs into short, punchy lines and lists where it fits.\n\n3. Cut all filler and generic marketing language.\n\n4. Ground at least one concrete detail in freelance web development work (a specific client story, tool, code example, or platform like WordPress/Shopify/GoHighLevel) — even if the original post doesn't mention it. Do not let the post read as generic business advice anyone could post.\n\n5. End with a short, punchy closing line, not a generic summary paragraph.\n\n6. Match the rhythm of the examples: short sentences, line breaks, no fluff, confident tone.\n\n--- MANDATORY OUTPUT VALIDATION ---\nYou are FORBIDDEN from using these exact phrases anywhere in final_post or hook_line: \"What if I told you\", \"Here's the truth\", \"Let's be honest\". If your draft contains any of these, delete that sentence entirely and write a completely different opening.\n\nYou are FORBIDDEN from using any emoji anywhere in the output. Text only. No 🚀, no ✨, no emoji of any kind.\n\nYou are FORBIDDEN from using em dashes (—) anywhere.\n\nRe-read your final output once before returning it. If any forbidden item is present, rewrite that section before responding.\n\nRules:\n\n1. NEVER use em dashes (—) anywhere in the output.\n\n--- OUTPUT ---\n\nReturn:\n\n- final_post: the fully rewritten post\n\n- hook_line: the new opening line\n\n- hashtags: 4-5 relevant hashtags",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -848,
+        -48
+      ],
+      "id": "9e55720f-b5eb-4f21-94df-e9ee679ac99d",
+      "name": "Refiner"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional LinkedIn ghostwriter who crafts high-performing posts designed to build authority, spark conversation, and drive strong engagement for a personal brand or business page.\n\nYour task is to write a LinkedIn post based on the following topic or title:\nYour task is to choose a fresh, valuable, and highly relevant topic within the business, marketing, and automation space (or your specific niche) that would perform well on LinkedIn today. Pick something different from typical generic advice, ideally tied to a real problem, insight, or lesson. Then write a full LinkedIn post about that topic.\n\nGuidelines to follow:\n\n1. Hook: Open with a bold, scroll-stopping first line. It should spark curiosity, challenge a common assumption, or state a sharp truth that makes the reader want to keep reading.\n\n2. Structure: Use short sentences and short paragraphs, no more than 1 to 3 lines each. Add generous line breaks so the post is easy to read on mobile.\n\n3. Tone: Confident, conversational, and human. Write like a real professional sharing a genuine opinion or lesson, never like a corporate announcement or ad.\n\n4. Value: Focus on one clear idea, lesson, or insight. Back it up with a short example, personal observation, or practical takeaway that feels specific and real.\n\n5. Length variation: Most posts should be 100 to 200 words. Occasionally, when the topic naturally calls for more depth, write a medium length post of around 250 to 350 words instead. Vary this naturally based on the topic rather than defaulting to the same length every time.\n\n6. SEO and keywords: Naturally include relevant industry keywords and phrases that people in this niche commonly search for or care about. Weave them into the sentences so they read naturally and are never forced or stuffed in.\n\n7. Engagement: Write to maximize likes, comments, and shares. Make the post relatable or slightly opinionated so people feel the urge to react or share their own take in the comments.\n\n8. Ending: Close with a strong final line, a soft call to action, or a direct question that invites comments and discussion.\n\n9. Hashtags: Add 3 to 5 specific, relevant hashtags at the very end of the post, on a new line, separated by spaces. Avoid generic or overused hashtags.\n\n10. Formatting rules:\n    - Do not use the em dash character \"—\" anywhere in the post\n    - Do not use emojis\n    - Do not use double dashes or regular dashes as punctuation\n    - Do not use bullet points or numbered lists unless the topic is specifically a list of tips\n    - Use only plain, natural punctuation such as periods and commas\n\n11. Authenticity: Avoid buzzwords, cliches, and generic phrases. The post should never sound like an advertisement.\n\nReturn only the final LinkedIn post text including hashtags. Do not include any explanation, preamble, or notes before or after the post.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1152,
+        -48
+      ],
+      "id": "9e37cbf0-b336-455c-a5bb-f015c726318a",
+      "name": "main agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-sol",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-sol"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -864,
+        160
+      ],
+      "id": "345fa0b5-b04a-43e2-a14e-5650ab40c240",
+      "name": "Refiner's",
+      "credentials": {
+        "openAiApi": {
+          "id": "6WHI6W53wJUQpWfG",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        336
+      ],
+      "id": "4a22c2cf-09ae-4354-a01d-d52c884e1c3b",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6keNErJ9VqsWSRCN",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"final_post\": \"Your refined LinkedIn post text goes here including line breaks and hashtags\",\n  \"hook_line\": \"The first line of the post used as the hook\",\n  \"hashtags\": \"hashtag1 hashtag2 hashtag3\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -752,
+        176
+      ],
+      "id": "04200faa-f8db-4857-8e4f-7a26081468b4",
+      "name": "Refiner's parser"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-image-2",
+          "mode": "list",
+          "cachedResultName": "GPT-IMAGE-2"
+        },
+        "prompt": "={{ $json.text }}",
+        "options": {
+          "quality": "medium",
+          "size": "1024x1024"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        -48
+      ],
+      "id": "a1898273-a030-44b0-aa47-c48a613912e2",
+      "name": "image generator",
+      "credentials": {
+        "openAiApi": {
+          "id": "6WHI6W53wJUQpWfG",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "0eba95a7-3dac-44cc-ac30-96404b4fdaf0",
+      "name": "Edit Image"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Read this LinkedIn post and identify its core concept in one phrase — a specific idea, tension, or lesson, not a vague theme.\n\nStyle: photorealistic, clean, high-end editorial photography — natural lighting, minimal composition, muted professional color palette. Avoid cartoonish, illustrated, whimsical, or overly staged stock-photo aesthetics.\n\nBefore creating the scene, check: is this post written for a general professional audience, or does it specifically reference coding, web development, or client/dev work?\n- If the post is general (applies to any professional, no dev-specific references), keep the visual metaphor general too — avoid coding screens, IDEs, or dev-specific objects unless the post explicitly mentions them.\n- If the post specifically mentions code, clients, websites, hosting, or dev work, then dev-specific visuals are appropriate.\n- Match the visual's specificity to the post's actual specificity. Don't narrow a general post into a niche developer scene.\n\nThen output ONE short, specific visual scene (1-2 sentences) that directly and literally represents that specific concept.\n\nRules:\n- No offices, laptops, dashboards, inventory, gears, or generic business stock-photo scenes\n- No journals, typewriters, ink smudges, tea cups, vintage desks, or \"writing process\" imagery — unless the post is literally about the physical act of writing\n- The scene must connect to the post's actual subject matter, at the right level of specificity (general concept for general posts, dev-specific for dev-specific posts) — not an abstract or unrelated metaphor\n- Vary the visual approach each time — don't default to \"two people talking.\" Consider alternatives like: a single object/metaphor in isolation, a bold flat-illustration concept, a close-up detail shot, an abstract symbolic scene, or a solo person in action\n- Focus on a concrete moment, object, or metaphor tied to the post's actual message\n- Before finalizing, check: does this scene make sense ONLY for this specific post, or could it be reused for any random post? If it could apply to anything, make it more specific.\n- Output only the scene description, nothing else\n\nPost: {{ $json.output.final_post }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -544,
+        -48
+      ],
+      "id": "df83bc09-8345-4c2b-9a4c-4a14e74319e9",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        544,
+        -288
+      ],
+      "id": "118690ef-ea6f-4c1d-b768-60813d733887",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.5",
+          "mode": "list",
+          "cachedResultName": "gpt-5.5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -464,
+        160
+      ],
+      "id": "c165ef7b-c857-47e2-a0ef-d4e6db9b2683",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6WHI6W53wJUQpWfG",
+          "name": "OpenAI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "main agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "main agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "main agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "main agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refiner": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "main agent": {
+      "main": [
+        [
+          {
+            "node": "Refiner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refiner's": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Refiner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Refiner's parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refiner's parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Refiner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image generator": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "image generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Karachi",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "59c44053-63c5-453a-999e-28afd9a3a2f1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f0d29f60549fb7957488e486e2a574c52a3049903335786577dfb4b290e0fda0"
+  },
+  "nodeGroups": [],
+  "id": "xixaaAgYROiP4ZlU",
+  "tags": []
+}
