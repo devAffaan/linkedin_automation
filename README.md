@@ -2,7 +2,7 @@
 
 An end to end n8n workflow that generates AI written LinkedIn posts, creates matching images, routes them through an email based approval step, and automatically publishes and logs them.
 
-![Workflow Overview](./assest.png)
+![Workflow Overview](./assest.jpeg)
 
 ## Overview
 
